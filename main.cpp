@@ -50,9 +50,11 @@ public:
 	void checkout(string item, double calcSubtotal);
 };
 
+//globals
 bool loggedin;
 int menu_items;
 
+//function to display menu based upon being logged in or not
 void displayMenu() {
 
 	if (!loggedin) {
