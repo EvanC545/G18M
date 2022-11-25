@@ -51,7 +51,7 @@ public:
 };
 
 //globals
-bool loggedin;
+bool loggedin = false;
 int menu_items;
 
 //function to display menu based upon being logged in or not
