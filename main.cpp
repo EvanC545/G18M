@@ -50,7 +50,44 @@ public:
 	void checkout(string item, double calcSubtotal);
 };
 
+bool loggedin;
+int menu_items;
+
+void displayMenu() {
+
+	if (!loggedin) {
+
+		cout << "1. Login\n";
+		cout << "2. Create Account\n";
+		cout << "3. Exit Program\n\n";
+		menu_items = 3;
+
+	}
+	else {
+
+		cout << "1. View Items\n";
+		cout << "2. Cart Info\n";
+		cout << "3. Checkout\n";
+		cout << "4. Order History\n";
+		cout << "5. Edit Account\n";
+		cout << "6. Exit Program\n\n";
+		menu_items = 6;
+
+	}
+
+}
+
 int main() {
+
+	displayMenu();
+	int choice;
+
+	do {
+
+		cout << ">> ";
+		cin >> choice;
+
+	} while (choice < 1 || choice > menu_items);
 
 	return 0;
 }
