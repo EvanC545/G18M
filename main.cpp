@@ -80,8 +80,11 @@ void displayMenu() {
 }
 
 int main() {
-
+	
+	//display menu
 	displayMenu();
+	
+	//get user choice
 	int choice;
 
 	do {
@@ -90,6 +93,52 @@ int main() {
 		cin >> choice;
 
 	} while (choice < 1 || choice > menu_items);
+	
+	//perform user desired action
+	if (!loggedin) {
+
+		switch (choice) {
+
+		case 1: 
+			//login
+			//set loggedin to true
+			break;
+		case 2:
+			//create account
+			break;
+		case 3:
+			exit(0);
+			break;
+
+		}
+
+	}
+	else {
+
+		switch (choice) {
+
+		case 1:
+			//view items
+			break;
+		case 2:
+			//cart info
+			break;
+		case 3:
+			//checkout
+			break;
+		case 4:
+			//order history
+			break;
+		case 5:
+			//edit account
+			break;
+		case 6:
+			exit(0);
+			break;
+
+		}
+
+	}
 
 	return 0;
 }
