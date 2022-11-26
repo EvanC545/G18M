@@ -51,7 +51,8 @@ public:
 };
 
 //globals
-bool loggedin = false;
+bool loggedin = true;
+bool nested = false;
 int menu_items;
 int choice;
 
@@ -69,6 +70,8 @@ void getChoice() {
 
 //function to display menu based upon being logged in or not
 void displayMenu() {
+
+	nested = false;
 
 	if (!loggedin) {
 
@@ -96,6 +99,8 @@ void displayMenu() {
 //each will be represented by numbers 1 through 4 respectively
 void displayNested(int nest) {
 
+	nested = true;
+
 	switch (nest) {
 
 	case 1:
@@ -108,25 +113,125 @@ void displayNested(int nest) {
 		break;
 	case 2:
 		cout << endl;
-		cout << "1. View Cart\n";
-		cout << "2. Input Shipping/Billing Address\n";
-		cout << "3. Input Card Info\n";
-		cout << "4. Confirm Checkout\n\n";
-		menu_items = 4;
+		cout << "1. Go Back\n";
+		cout << "2. View Cart\n";
+		cout << "3. Input Shipping/Billing Address\n";
+		cout << "4. Input Card Info\n";
+		cout << "5. Confirm Checkout\n\n";
+		menu_items = 5;
 		break;
 	case 3:
 		cout << endl;
-		cout << "1. View Past Orders\n\n";
-		menu_items = 1;
+		cout << "1. Go Back\n";
+		cout << "2. View Past Orders\n\n";
+		menu_items = 2;
 		break;
 	case 4:
 		cout << endl;
-		cout << "1. Edit Addresses\n";
-		cout << "2. Edit Card\n";
-		cout << "3. Edit Name/Email\n";
-		cout << "4. Change Password\n";
-		cout << "5. Delete Account\n\n";
-		menu_items = 5;
+		cout << "1. Go Back\n";
+		cout << "2. Edit Addresses\n";
+		cout << "3. Edit Card\n";
+		cout << "4. Edit Name/Email\n";
+		cout << "5. Change Password\n";
+		cout << "6. Delete Account\n\n";
+		menu_items = 6;
+		break;
+
+	}
+
+}
+
+//function to handle user desired action for cart info, checkout, order history, and edit account nested menus
+void nestedAction(int nest) {
+
+	switch (nest) {
+
+	case 1:
+		
+		//cart info nested menu branch
+		switch (choice) {
+
+		case 1:
+			//go back
+			break;
+		case 2:
+			//view cart
+			break;
+		case 3:
+			//remove item
+			break;
+		case 4:
+			//add item
+			break;
+
+		}
+		break;
+
+	case 2:
+
+		//checkout nested menu branch
+		switch (choice) {
+
+		
+		case 1:
+			//go back
+			break;
+		case 2:
+			//view cart
+			break;
+		case 3:
+			//input shipping/billing information
+			break;
+		case 4:
+			//input card info
+			break;
+		case 5:
+			//confirm checkout
+			break;
+
+		}
+		break;
+
+	case 3:
+
+		//order history nested menu branch
+		switch (choice) {
+
+		case 1:
+			//go back
+			break;
+		case 2:
+			//view past orders
+			break;
+
+		}
+		break;
+
+	case 4:
+
+		//edit account nested menu branch
+		switch (choice) {
+
+		case 1:
+			//go back
+			break;
+		case 2:
+			//edit addresses
+			break;
+		case 3:
+			//edit card
+			break;
+		case 4:
+			//edit name/email
+			break;
+		case 5:
+			//change password
+			break;
+		case 6:
+			//delete account
+			break;
+
+		}
 		break;
 
 	}
@@ -134,66 +239,78 @@ void displayNested(int nest) {
 }
 
 int main() {
-	
-	//display menu
-	displayMenu();
-	
-	//get user choice
-	getChoice();
-	
-	//perform user desired action
-	if (!loggedin) {
 
-		switch (choice) {
+	
 
-		case 1: 
-			//login
-			//set loggedin to true
-			break;
-		case 2:
-			//create account
-			break;
-		case 3:
-			exit(0);
-			break;
+	do {
+
+		//display menu
+		displayMenu();
+
+		//get user choice
+		getChoice();
+
+		//perform user desired action
+		if (!loggedin) {
+
+			switch (choice) {
+
+			case 1:
+				//login
+				//set loggedin to true
+				break;
+			case 2:
+				//create account
+				break;
+			case 3:
+				exit(0);
+				break;
+
+			}
+
+		}
+		else {
+
+			switch (choice) {
+
+			case 1:
+				//view items
+				break;
+			case 2:
+				//cart info
+				displayNested(1);
+				getChoice();
+				nestedAction(1);
+				break;
+			case 3:
+				//checkout
+				displayNested(2);
+				getChoice();
+				nestedAction(2);
+				break;
+			case 4:
+				//order history
+				displayNested(3);
+				getChoice();
+				nestedAction(3);
+				break;
+			case 5:
+				//edit account
+				displayNested(4);
+				getChoice();
+				nestedAction(4);
+				break;
+			case 6:
+				exit(0);
+				break;
+
+			}
 
 		}
 
-	}
-	else {
-
-		switch (choice) {
-
-		case 1:
-			//view items
-			break;
-		case 2:
-			//cart info
-			displayNested(1);
-			getChoice();
-			break;
-		case 3:
-			//checkout
-			displayNested(2);
-			getChoice();
-			break;
-		case 4:
-			//order history
-			displayNested(3);
-			getChoice();
-			break;
-		case 5:
-			//edit account
-			displayNested(4);
-			getChoice();
-			break;
-		case 6:
-			exit(0);
-			break;
-
-		}
-
-	}
+	} while (choice != menu_items || nested);
+	
+	
 
 	return 0;
 }
