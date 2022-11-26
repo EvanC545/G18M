@@ -88,8 +88,9 @@ void displayMenu() {
 		cout << "3. Checkout\n";
 		cout << "4. Order History\n";
 		cout << "5. Edit Account\n";
-		cout << "6. Exit Program\n\n";
-		menu_items = 6;
+		cout << "6. Logout\n";
+		cout << "7. Exit Program\n\n";
+		menu_items = 7;
 
 	}
 
@@ -301,6 +302,10 @@ int main() {
 				nestedAction(4);
 				break;
 			case 6:
+				//logout
+				//set loggedin to false
+				break;
+			case 7:
 				exit(0);
 				break;
 
