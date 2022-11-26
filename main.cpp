@@ -51,7 +51,7 @@ public:
 };
 
 //globals
-bool loggedin = true;
+bool loggedin = false;
 bool nested = false;
 int menu_items;
 int choice;
