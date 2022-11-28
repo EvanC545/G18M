@@ -1,4 +1,9 @@
 #include <iostream>
+#include <sqlite3.h>
+#include "account.h"
+#include "cart.h"
+#include "movie.h"
+#include "order.h"
 
 using namespace std;
 

@@ -1,29 +1,18 @@
 #include <iostream>
 #include "order.h"
 
-void Order::setCustomer_Name(string name) {
+void Order::setCustomer_Name(Account customer) {
 
-	Customer_Name = name;
+	this->customer = customer;
 
 };
 
 string Order::getCustomer_Name() {
 
-	return Customer_Name;
+	return customer.getName();
 
 };
 
-void Order::setCustomer_Number(int c_number) {
-
-	Customer_Number = c_number;
-
-};
-
-int Order::getCustomer_Number() {
-
-	return Customer_Number;
-
-};
 
 void Order::setOrder_Number(int o_number) {
 

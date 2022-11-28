@@ -1,27 +1,29 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "movie.h"
 
 using std::string;
 
 class Cart {
 	
 private:
+	// Could use map to store Item : Quantity Pairs if wanted
 	string tempItem;
-	vector<string> item;
-	vector<double> itemPrice;
+	vector<Movie> items;
+	//vector<double> itemPrice;
 	//int numItems;
 	//double totalCost;
 	//double subTotal;
 	
 	//Regular functions
-	void viewCart(vector<string> item, vector<double> itemPrice);
+	/*void viewCart(vector<string> item, vector<double> itemPrice);
 	bool cartIsEmpty(vector<string> item);
 	void addItem(vector<string> item, vector<double> itemPrice, string tempItem);
 	void decItem(vector<string> item, vector<double> itemPrice, string tempItem);
 	void removeItem(vector<string> item, vector<double> itemPrice, string tempItem);
 	void checkout(vector<string> item, vector<double> itemPrice);
-	double calcSubtotal(vector<double> itemPrice);
+	double calcSubtotal(vector<double> itemPrice);*/
 	
 public:
 	
@@ -37,9 +39,9 @@ public:
 	// Public facing functions
 	void viewCart();
 	bool cartIsEmpty();
-	void addItem(string tempItem);
-	void decItem(string tempItem);
-	void removeItem(string tempItem);
+	void addItem(Movie item);
+	void decItem(Movie item);
+	void removeItem(Movie item);
 	void checkout();
 	double calcSubtotal();
 };

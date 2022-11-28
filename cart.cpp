@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <string>
+#include <iterator>
 #include "cart.h"
 
 using namespace std;
@@ -18,21 +20,30 @@ Cart::Cart() {};
 // };
 
 // Function definitions
-void Cart::viewCart(vector<string> item, vector<double> itemPrice) {
-  for (int i = 0; i < item.size(); i++) {
-     cout << i+1 << ")" << item[i] << ": $" << itemPrice[i] << endl;  
-  }
-  // TODO: Ensure this works properly
-};
+//void Cart::viewCart(vector<string> item, vector<double> itemPrice) {
+//  for (int i = 0; i < item.size(); i++) {
+//     cout << i+1 << ")" << item[i] << ": $" << itemPrice[i] << endl;  
+//  }
+//  // TODO: Ensure this works properly
+//};
 void Cart::viewCart() {
-  viewCart(vector<string> item, vector<double> itemPrice);
+    vector<Movie>::iterator ptr;
+    int counter = 1;
+    for (ptr = items.begin(); ptr < items.end(); ptr++)
+    {
+        cout << counter << ")" << ptr->getTitle() << ": $" << ptr->getPrice() << endl;
+    }
 };
 
-bool Cart::cartIsEmpty(vector<string> item) {
-  return item.empty();
-};
+//bool Cart::cartIsEmpty(vector<string> item) {
+//  return item.empty();
+//};
 bool Cart::cartIsEmpty() {
-  return cartIsEmpty(vector<string> item);
+    if (items.size() < 1)
+    {
+        return true;
+    }
+    return false;
 };
 
 void Cart::addItem(vector<string> item, vector<double> itemPrice, string tempItem) {
@@ -50,8 +61,8 @@ void Cart::addItem(vector<string> item, vector<double> itemPrice, string tempIte
       cout << "Item added!" << endl;
     }
 };
-void Cart::addItem(string tempItem) {
-  addItem(vector<string> item, vector<double> itemPrice, string tempItem);
+void Cart::addItem(Movie item) {
+    items.push_back(item)
 };
 
 void Cart::decItem(vector<string> item, vector<double> itemPrice, string tempItem) {
