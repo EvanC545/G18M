@@ -20,6 +20,7 @@ private:
 	string cardSecurityCode;
 	int currentCardId;
 public:
+	Account(string name, string email, string password);
 	void setName(string name);
 	string getName();
 	void setEmail(string email);
