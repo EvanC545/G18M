@@ -22,7 +22,7 @@ private:
 	string cardNumber;
 	string cardExpDate;
 	string cardSecurityCode;
-	int currentCartId;
+	Cart* currentCart;
 
 public:
 	Account() {};
@@ -41,9 +41,10 @@ public:
 	string getBillingAddress();
 	void setCard(string currentCardId);
 	// Datatype?--> string getCard();
-	void setCart(int cartId);
+	void setCart(Cart* cart);
 	// Datatype? --> string getCart();
 	int getID();
+	Cart* getCart();
 };
 
 

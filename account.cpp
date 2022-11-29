@@ -101,6 +101,7 @@ Account::Account(string name, string email, string password)
 		this->id = strtol(str, NULL, 10);
 		//fprintf(stdout, "Record: %s\n", str);
 	}
+	sqlite3_finalize(stmt);
 
 	sqlite3_close(db);
 }
@@ -126,6 +127,7 @@ Account::Account(int id)
 		fprintf(stderr, "Account doesn't exist with that ID");
 		sqlite3_free(zErrMsg);
 	}
+	this->id = id;
 	char* sqlEmail = (char*)sqlite3_column_text(stmt, 1);
 	this->email = sqlEmail;
 	char* sqlName = (char*)sqlite3_column_text(stmt, 0);
@@ -162,6 +164,8 @@ Account::Account(int id)
 	}
 	
 	// TODO: Need Card Details
+	sqlite3_finalize(stmt);
+
 	sqlite3_close(db);
 
 }
@@ -200,6 +204,7 @@ int AccountManager::authenticate(string email, string password)
 				std::cout << std::endl << "Login Successful" << std::endl;
 				char* accountIDChar = (char*)sqlite3_column_text(stmt, 13);
 				int id = strtol(accountIDChar, NULL, 10);
+				sqlite3_finalize(stmt);
 				sqlite3_close(db);
 
 				return id;
@@ -229,3 +234,12 @@ int Account::getID()
 	return this->id;
 }
 
+void Account::setCart(Cart* cart)
+{
+	this->currentCart = cart;
+}
+
+Cart* Account::getCart()
+{
+	return this->currentCart;
+}

@@ -4,6 +4,7 @@
 #include <iterator>
 #include <map>
 #include "movie.h"
+#include "account.h"
 
 using namespace std;
 
@@ -29,6 +30,15 @@ static sqlite3* getDBConnection(string Name, sqlite3* db)
 		//fprintf(stderr, "Opened database successfully\n");
 	}
 	return db;
+}
+
+static int busy_handler(void* data, int attempt) {
+	printf("attempt: %d\n", attempt);
+	if (attempt < 50) {
+		sqlite3_sleep(500);
+		return 1;
+	}
+	return 0;
 }
 
 
@@ -137,9 +147,14 @@ void Movie::setID(int id) {
 	this->id = id;
 };
 
+int Movie::getID() {
+
+	return this->id;
+};
 
 
-void MovieManager::displayAllMovies()
+
+void MovieManager::displayAndChooseMovies(Account* account)
 {
 	// Show movies
 	// Maybe use map to store ID with corresponding list number
@@ -190,17 +205,82 @@ void MovieManager::displayAllMovies()
 
 		allMovies.insert(std::pair<int, Movie*>(counter, tempMovie));
 		rc = sqlite3_step(stmt);
+
 		counter++;
 	}
+	sqlite3_finalize(stmt);
 
-	cout << "TOTAL MAP:" << endl;
+
+	cout << "---> Available Movies <---" << endl;
 	map<int, Movie*>::iterator itr;
 
 	for (itr = allMovies.begin(); itr != allMovies.end(); itr++)
 	{
 		cout << itr->first << ": " << itr->second->getTitle() << endl;
 	}
-	
+
+	bool doneSelecting = false;
+	string selection = "";
+	int selectionInt = 0;
+
+	while (!doneSelecting)
+	{
+		cout << endl << "Type # of Movie to add it to your cart: " << endl;
+		cout << "Type 'DONE' to stop choosing movies" << endl;
+		cout << "# of Movie: ";
+		cin >> selection;
+		if (selection == "DONE")
+		{
+			break;
+		}
+
+		selectionInt = stoi(selection);
+
+		if (selectionInt < 0 || selectionInt > counter)
+		{
+			cout << "That was not a valid movie. Please select a movie from the list." << endl << endl;
+			selection = nullptr;
+			selectionInt = 0;
+			continue;
+		}
+
+		Movie* selectedMovie = allMovies[selectionInt];
+		Cart* accountCart = account->getCart();
+
+
+		int movieID = selectedMovie->getID();
+		string movieIDStr = to_string(movieID);
+		int cartID = accountCart->getID();
+		string cartIDStr = to_string(cartID);
+		string cartItemSql = "INSERT INTO CartItems(CartID, Item) VALUES(" + cartIDStr + ", " + movieIDStr + ");";
+		rc = sqlite3_prepare(db, cartItemSql.c_str(), -1, &stmt, NULL);
+		if (rc != SQLITE_OK)
+		{
+			fprintf(stderr, "SQL Statement error: %s\n", zErrMsg);
+			sqlite3_free(zErrMsg);
+		}
+
+		// DB IS BUSY HERE
+
+		//sqlite3_busy_handler(db, busy_handler, NULL);
+		rc = sqlite3_step(stmt);
+		if (rc != SQLITE_DONE) {
+			fprintf(stderr, "SQL error: %s\n", zErrMsg);
+			sqlite3_free(zErrMsg);
+		}
+
+
+		//accountCart->addItem(selectedMovie);
+
+		cout << endl << "\"" << selectedMovie->getTitle() << "\" was added to your cart." << endl;
+
+		sqlite3_close(db);
+
+	}
+
+
+
+
 
 
 }

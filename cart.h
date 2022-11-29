@@ -11,12 +11,13 @@ class Cart {
 	
 private:
 	// Could use map to store Item : Quantity Pairs if wanted
-	int numItems;
+	int id;
+	int numItems = 0;
 	Account* account;
 	vector<Movie*> movies;
 	//Movie* movie;
-	float totalCost;
-	float subTotal;
+	float totalCost = 0.00;
+	float subTotal = 0.00;
 	
 
 	
@@ -27,9 +28,10 @@ public:
 
 	void viewCart();
 	bool cartIsEmpty();
-	//void addItem(Movie item);
-	//void decItem(Movie item);
-	//void removeItem(Movie item);
-	void checkout();
+	bool addItem(Movie* movie);
+	bool decItem(Movie* movie);
+	bool removeItem(Movie* movie);
+	bool checkout();
 	double calcSubtotal();
+	int getID();
 };

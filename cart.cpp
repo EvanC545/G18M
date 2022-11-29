@@ -45,7 +45,8 @@ Cart::Cart(Account* account)
 
 	int accountID = account->getID();
 	string accountIDStr = to_string(accountID);
-	string cartSql = "INSERT INTO Cart(Account, Subtotal, Status, ID, NumOfItems, TotalCost) VALUES('" + accountIDStr + "', null, null, null, null, null)';";
+	string cartSql = "INSERT INTO Cart(Account) VALUES(" + accountIDStr + ");";
+
 	rc = sqlite3_prepare(db, cartSql.c_str(), -1, &stmt, NULL);
 	if (rc != SQLITE_OK)
 	{
@@ -53,17 +54,76 @@ Cart::Cart(Account* account)
 		sqlite3_free(zErrMsg);
 	}
 	rc = sqlite3_step(stmt);
-
-		if (rc != SQLITE_DONE) {
+	if (rc != SQLITE_DONE) {
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 	}
 	else {
 		fprintf(stdout, "Records created successfully\n");
 	}
+	sqlite3_finalize(stmt);
 
 
+	string cartSelectSql = "SELECT * FROM Cart where Account = " + accountIDStr + " ORDER BY ID DESC;";
+	rc = sqlite3_prepare(db, cartSelectSql.c_str(), -1, &stmt, NULL);
+	if (rc != SQLITE_OK)
+	{
+		fprintf(stderr, "SQL Statement error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+	}
 
-	
+	rc = sqlite3_step(stmt);
+	char* str = (char*)sqlite3_column_text(stmt, 3);
+	if (rc != SQLITE_ROW) {
+		fprintf(stderr, "Record not found");
+		sqlite3_free(zErrMsg);
+	}
+	else {
+		this->id = stoi(str);
+		//fprintf(stdout, "Record: %s\n", str);
+	}
 
+	sqlite3_close(db);
+
+}
+
+
+bool Cart::addItem(Movie* movie)
+{
+	sqlite3* db = nullptr;
+	sqlite3_stmt* stmt = nullptr;
+	char* zErrMsg = 0;
+	int rc;
+	db = getDBConnection(DB_NAME, db);
+	int movieID = movie->getID();
+	string movieIDStr = to_string(movieID);
+	int cartID = this->id;
+	string cartIDStr = to_string(cartID);
+
+	string cartItemSql = "INSERT INTO CartItems(CartID, Item) VALUES(" + cartIDStr + ", " + movieIDStr + ");";
+
+	rc = sqlite3_prepare(db, cartItemSql.c_str(), -1, &stmt, NULL);
+	if (rc != SQLITE_OK)
+	{
+		fprintf(stderr, "SQL Statement error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+	}
+	rc = sqlite3_step(stmt);
+	if (rc != SQLITE_DONE) {
+		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+	}
+	else {
+		fprintf(stdout, "Records created successfully\n");
+	}
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+
+	return false;
+}
+
+
+int Cart::getID()
+{
+	return this->id;
 }

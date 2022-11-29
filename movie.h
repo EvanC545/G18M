@@ -3,6 +3,8 @@
 
 using std::string;
 
+class Account;
+
 class Movie {
 
 private:
@@ -24,6 +26,7 @@ public:
 	Movie(string p_title, string gen, int rel, double len, string dir, int rev, double p_price);
 
 	//getters
+	int getID();
 	string getTitle();
 	string getGenre();
 	int getReleased();
@@ -47,6 +50,6 @@ public:
 
 class MovieManager {
 public:
-	void displayAllMovies();
+	void displayAndChooseMovies(Account* account);
 	bool addMovieToCart();
 };

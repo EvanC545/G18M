@@ -9,7 +9,6 @@ using namespace std;
 
 string DB_NAME = "G18M.sqlite";
 
-
 //globals
 
 //CHANGE TO FALSE
@@ -17,6 +16,7 @@ bool loggedin = false;
 bool nested = false;
 int menu_items;
 int choice;
+
 
 //function to get user choice for menu
 void getChoice() {
@@ -203,8 +203,7 @@ void nestedAction(int nest) {
 
 int main() {
 
-	
-
+	Account* account = nullptr;
 	do {
 
 		//display menu
@@ -212,6 +211,8 @@ int main() {
 
 		//get user choice
 		getChoice();
+
+
 
 		//perform user desired action
 		if (!loggedin) {
@@ -222,11 +223,11 @@ int main() {
 			string password2;
 			bool validPasswords = false;
 			int idOrFalse = 0;
-			Account* account;
 			AccountManager accountManager;
 			switch (choice) {
 
 			case 1:
+			{
 				//login
 				//set loggedin to true
 				
@@ -243,12 +244,14 @@ int main() {
 				{
 					cout << endl << "You are now logged in as " << account->getName() << endl << endl;
 					loggedin = true;
-					//Cart* cart = new Cart(account);
-					//account->setCart(cart);
+					Cart* cart = new Cart(account);
+					account->setCart(cart);
 				}
 
 				break;
+			}
 			case 2:
+			{
 				//create account
 
 				cout << "Please enter your name: ";
@@ -273,7 +276,14 @@ int main() {
 				}
 				account = new Account(name, email, password1);
 
+				cout << endl << "You are now logged in as " << account->getName() << endl << endl;
+
+				loggedin = true;
+				Cart* cart = new Cart(account);
+				account->setCart(cart);
+
 				break;
+			}
 			case 3:
 				exit(0);
 				break;
@@ -288,7 +298,7 @@ int main() {
 			case 1:
 				//view items
 				MovieManager movieManager;
-				movieManager.displayAllMovies();
+				movieManager.displayAndChooseMovies(account);
 
 
 
