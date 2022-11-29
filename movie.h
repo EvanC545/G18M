@@ -47,6 +47,8 @@ public:
 
 	int incrementQuantity();
 	int decrementQuantity();
+	void setQuantity(int quantity);
+	int getQuantity();
 
 };
 
@@ -54,5 +56,6 @@ public:
 class MovieManager {
 public:
 	void displayAndChooseMovies(Account* account);
+
 	bool addMovieToCart();
 };

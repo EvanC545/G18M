@@ -36,5 +36,7 @@ public:
 	bool checkout();
 	float calcSubtotal();
 	int getID();
-	bool removeHelper(Movie* movie, int movieToDeleteId);
+	void displayCart();
+	void displayAddToCart();
+	void displayRemoveFromCart();
 };

@@ -16,6 +16,7 @@ bool loggedin = false;
 bool nested = false;
 int menu_items;
 int choice;
+Account* account;
 
 
 //function to get user choice for menu
@@ -106,30 +107,40 @@ void displayNested(int nest) {
 
 //function to handle user desired action for cart info, checkout, order history, and edit account nested menus
 void nestedAction(int nest) {
-
 	switch (nest) {
 
 	case 1:
-		
+	{
 		//cart info nested menu branch
 		switch (choice) {
 
-		case 1:
-			//go back
-			break;
-		case 2:
-			//view cart
-			break;
-		case 3:
-			//remove item
-			break;
-		case 4:
-			//add item
-			break;
-
+			case 1:
+				//go back
+				break;
+			case 2:
+			{
+				//view cart
+				Cart* accountCart = account->getCart();
+				accountCart->displayCart();
+				break;
+			}
+			case 3:
+			{
+				//remove item
+				Cart* accountCart = account->getCart();
+				accountCart->displayRemoveFromCart();
+				break;
+			}
+			case 4:
+			{
+				//add item
+				Cart* accountCart = account->getCart();
+				accountCart->displayAddToCart();
+				break;
+			}
 		}
 		break;
-
+	}
 	case 2:
 
 		//checkout nested menu branch
@@ -140,8 +151,12 @@ void nestedAction(int nest) {
 			//go back
 			break;
 		case 2:
+		{
 			//view cart
+			Cart * accountCart = account->getCart();
+			accountCart->displayCart();
 			break;
+		}
 		case 3:
 			//input shipping/billing information
 			break;
@@ -203,7 +218,7 @@ void nestedAction(int nest) {
 
 int main() {
 
-	Account* account = nullptr;
+	account = nullptr;
 	do {
 
 		//display menu
@@ -299,9 +314,6 @@ int main() {
 				//view items
 				MovieManager movieManager;
 				movieManager.displayAndChooseMovies(account);
-
-
-
 				break;
 			case 2:
 				//cart info

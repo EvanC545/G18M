@@ -3,6 +3,8 @@
 #include <string>
 #include <iterator>
 #include <sqlite3.h>
+#include <iomanip>
+#include <map>
 #include "cart.h"
 #include "account.h"
 
@@ -99,11 +101,8 @@ bool Cart::addItem(Movie* movie)
 	string movieIDStr = to_string(movieID);
 	int cartID = this->id;
 	string cartIDStr = to_string(cartID);
-	int movieQuantity = movie->incrementQuantity();
-	string movieQuantityStr = to_string(movieQuantity);
 
-	float moviePrice = movie->getPrice();
-	string moviePriceStr = to_string(moviePrice);
+
 
 	string checkItemInSql = "SELECT * FROM CartItems where CartID = " + cartIDStr + " and Item = " + movieIDStr + ";";
 	rc = sqlite3_prepare(db, checkItemInSql.c_str(), -1, &stmt, NULL);
@@ -119,6 +118,10 @@ bool Cart::addItem(Movie* movie)
 		sqlite3_reset(stmt);
 		sqlite3_finalize(stmt);
 
+
+		int movieQuantity = movie->incrementQuantity();
+		float moviePrice = movie->getPrice();
+		string moviePriceStr = to_string(moviePrice);
 		string cartItemSql = "INSERT INTO CartItems(CartID, Item, ItemPrice) VALUES(" + cartIDStr + ", " + movieIDStr + ", " + moviePriceStr + "); ";
 		rc = sqlite3_prepare(db, cartItemSql.c_str(), -1, &stmt, NULL);
 		if (rc != SQLITE_OK)
@@ -168,12 +171,21 @@ bool Cart::addItem(Movie* movie)
 	else
 	{
 		char* cartItemIdChar = (char*)sqlite3_column_text(stmt, 0);
-
 		int cartItemId = stoi(cartItemIdChar);
 		string cartItemIdStr = to_string(cartItemId);
+		
+		char* cartItemQuantityChar = (char*)sqlite3_column_text(stmt, 3);
+
+		int cartItemQuantity = stoi(cartItemQuantityChar);
+		movie->setQuantity(cartItemQuantity);
+		int newCartItemQuantity = movie->incrementQuantity();
+		string cartItemQuantityStr = to_string(newCartItemQuantity);
+
+		float cartItemPrice = movie->getPrice();
+		string cartItemPriceStr = to_string(cartItemPrice);
 		sqlite3_reset(stmt);
 		sqlite3_finalize(stmt);
-		string cartItemUpdateSql = "UPDATE CartItems SET Quantity = " + movieQuantityStr + ", ItemPrice = " + moviePriceStr + " WHERE ID = " + cartItemIdStr + " and CartID = " + cartIDStr + " and Item =" + movieIDStr + ";";
+		string cartItemUpdateSql = "UPDATE CartItems SET Quantity = " + cartItemQuantityStr + ", ItemPrice = " + cartItemPriceStr + " WHERE ID = " + cartItemIdStr + " and CartID = " + cartIDStr + " and Item =" + movieIDStr + ";";
 		rc = sqlite3_prepare(db, cartItemUpdateSql.c_str(), -1, &stmt, NULL);
 		if (rc != SQLITE_OK)
 		{
@@ -193,6 +205,17 @@ bool Cart::addItem(Movie* movie)
 
 			this->numItems++;
 			string cartNumOfItemsStr = to_string(this->numItems);
+			// Need to update Movie Vector
+			vector<Movie*>::iterator itr;
+			for (itr = this->movies.begin(); itr != this->movies.end(); itr++)
+			{
+				int currentId = (*itr)->getID();
+				if (currentId == movieID)
+				{
+					(*itr)->setQuantity(newCartItemQuantity);
+				}
+			}
+
 			float cartSubTotal = this->calcSubtotal();
 			string cartSubTotalStr = to_string(cartSubTotal);
 
@@ -248,11 +271,6 @@ bool Cart::decItem(Movie* movie)
 	string movieIDStr = to_string(movieID);
 	int cartID = this->id;
 	string cartIDStr = to_string(cartID);
-	int movieQuantity = movie->decrementQuantity();
-	string movieQuantityStr = to_string(movieQuantity);
-
-	float moviePrice = movie->getPrice();
-	string moviePriceStr = to_string(moviePrice);
 
 	string checkItemInSql = "SELECT * FROM CartItems where CartID = " + cartIDStr + " and Item = " + movieIDStr + ";";
 	rc = sqlite3_prepare(db, checkItemInSql.c_str(), -1, &stmt, NULL);
@@ -273,10 +291,20 @@ bool Cart::decItem(Movie* movie)
 		char* cartItemIdChar = (char*)sqlite3_column_text(stmt, 0);
 		int cartItemId = stoi(cartItemIdChar);
 		string cartItemIdStr = to_string(cartItemId);
+		char* cartItemQuantityChar = (char*)sqlite3_column_text(stmt, 3);
+		int cartItemQuantity = stoi(cartItemQuantityChar);
+		movie->setQuantity(cartItemQuantity);
+		int newCartItemQuantity = movie->decrementQuantity();
+		string cartItemQuantityStr = to_string(newCartItemQuantity);
+		float cartItemPrice = movie->getPrice();
+		string cartItemPriceStr = to_string(cartItemPrice);
+
+
+
 		sqlite3_reset(stmt);
 		sqlite3_finalize(stmt);
 
-		if (movieQuantity == 1)
+		if (cartItemQuantity == 1)
 		{
 			string deleteCartItemSql = "DELETE FROM CartItems where ID = " + cartItemIdStr;
 			rc = sqlite3_prepare(db, deleteCartItemSql.c_str(), -1, &stmt, NULL);
@@ -297,6 +325,15 @@ bool Cart::decItem(Movie* movie)
 
 				this->numItems--;
 				string cartNumOfItemsStr = to_string(this->numItems);
+				vector<Movie*>::iterator itr;
+				for (itr = this->movies.begin(); itr != this->movies.end(); itr++)
+				{
+					int currentId = (*itr)->getID();
+					if (currentId == movieID)
+					{
+						(*itr)->setQuantity(newCartItemQuantity);
+					}
+				}
 				float cartSubTotal = this->calcSubtotal();
 				string cartSubTotalStr = to_string(cartSubTotal);
 
@@ -322,6 +359,67 @@ bool Cart::decItem(Movie* movie)
 				}
 			}
 		}
+		else
+		{
+			string cartItemUpdateSql = "UPDATE CartItems SET Quantity = " + cartItemQuantityStr + ", ItemPrice = " + cartItemPriceStr + " WHERE ID = " + cartItemIdStr + " and CartID = " + cartIDStr + " and Item =" + movieIDStr + ";";
+			rc = sqlite3_prepare(db, cartItemUpdateSql.c_str(), -1, &stmt, NULL);
+			if (rc != SQLITE_OK)
+			{
+				fprintf(stderr, "SQL Statement error: %s\n", zErrMsg);
+				sqlite3_free(zErrMsg);
+			}
+			rc = sqlite3_step(stmt);
+
+			if (rc != SQLITE_DONE) {
+				fprintf(stderr, "SQL error: %s\n", zErrMsg);
+				sqlite3_free(zErrMsg);
+			}
+			else
+			{
+				sqlite3_reset(stmt);
+				sqlite3_finalize(stmt);
+
+				this->numItems--;
+				string cartNumOfItemsStr = to_string(this->numItems);
+				vector<Movie*>::iterator itr;
+				for (itr = this->movies.begin(); itr != this->movies.end(); itr++)
+				{
+					if ((*itr)->getID() == movieID)
+					{
+						(*itr)->setQuantity(newCartItemQuantity);
+					}
+				}
+				float cartSubTotal = this->calcSubtotal();
+				string cartSubTotalStr = to_string(cartSubTotal);
+
+				string cartUpdateSql = "UPDATE Cart SET NumOfItems = " + cartNumOfItemsStr + ", TotalCost = " + cartSubTotalStr + " WHERE ID = " + cartIDStr + ";";
+				rc = sqlite3_prepare(db, cartUpdateSql.c_str(), -1, &stmt, NULL);
+				if (rc != SQLITE_OK)
+				{
+					fprintf(stderr, "SQL Statement error: %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+				}
+				rc = sqlite3_step(stmt);
+
+				if (rc != SQLITE_DONE) {
+					fprintf(stderr, "SQL error: %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+				}
+				else
+				{
+					sqlite3_reset(stmt);
+					sqlite3_finalize(stmt);
+					sqlite3_close(db);
+					return true;
+				}
+				sqlite3_reset(stmt);
+				sqlite3_finalize(stmt);
+				sqlite3_close(db);
+
+				return true;
+			}
+			sqlite3_close(db);
+		}
 		sqlite3_reset(stmt);
 		sqlite3_finalize(stmt);
 		sqlite3_close(db);
@@ -329,158 +427,6 @@ bool Cart::decItem(Movie* movie)
 	}
 }
 
-//bool Cart::decItem(Movie* movie)
-//{
-//	sqlite3* db = nullptr;
-//	sqlite3_stmt* stmt = nullptr;
-//	char* zErrMsg = 0;
-//	int rc;
-//	db = getDBConnection(DB_NAME, db);
-//	int movieID = movie->getID();
-//	string movieIDStr = to_string(movieID);
-//	int cartID = this->id;
-//	string cartIDStr = to_string(cartID);
-//	float moviePrice = movie->getPrice();
-//	string moviePriceStr = to_string(moviePrice);
-//
-//	string checkItemInSql = "SELECT * FROM CartItems where CartID = " + cartIDStr + " and Item = " + movieIDStr + ";";
-//	rc = sqlite3_prepare(db, checkItemInSql.c_str(), -1, &stmt, NULL);
-//	if (rc != SQLITE_OK)
-//	{
-//		fprintf(stderr, "SQL Statement error: %s\n", zErrMsg);
-//		sqlite3_free(zErrMsg);
-//	}
-//	rc = sqlite3_step(stmt);
-//	if (rc != SQLITE_ROW) {
-//		cout << "That Item is not in your cart." << endl << endl;
-//		sqlite3_free(zErrMsg);
-//	}
-//	else
-//	{
-//		char* sqlQuantity = (char*)sqlite3_column_text(stmt, 3);
-//		int quantity = stoi(sqlQuantity);
-//		char* sqlID = (char*)sqlite3_column_text(stmt, 0);
-//		int id = stoi(sqlID);
-//		string sqlIDStr = to_string(id);
-//
-//		sqlite3_reset(stmt);
-//		sqlite3_finalize(stmt);
-//
-//
-//		// IF ONLY ONE QUANTITY OF ITEM
-//		if (quantity == 1)
-//		{
-//			string deleteCartItemSql = "DELETE FROM CartItems where ID = " + sqlIDStr;
-//			rc = sqlite3_prepare(db, deleteCartItemSql.c_str(), -1, &stmt, NULL);
-//			if (rc != SQLITE_OK)
-//			{
-//				fprintf(stderr, "SQL Statement error: %s\n", zErrMsg);
-//				sqlite3_free(zErrMsg);
-//			}
-//			rc = sqlite3_step(stmt);
-//			if (rc != SQLITE_DONE) {
-//				fprintf(stderr, "SQL error: %s\n", zErrMsg);
-//				sqlite3_free(zErrMsg);
-//			}
-//			else
-//			{
-//				fprintf(stdout, "Records deleted successfully\n");
-//				sqlite3_reset(stmt);
-//				sqlite3_finalize(stmt);
-//
-//				this->numItems--;
-//				string cartNumOfItemsStr = to_string(this->numItems);
-//				vector<Movie*>::iterator it;
-//
-//
-//				float cartSubTotal = this->calcSubtotal();
-//				string cartSubTotalStr = to_string(cartSubTotal);
-//
-//				string cartUpdateSql = "UPDATE Cart SET NumOfItems = " + cartNumOfItemsStr + ", TotalCost = " + cartSubTotalStr + " WHERE ID = " + cartIDStr + ";";
-//				rc = sqlite3_prepare(db, cartUpdateSql.c_str(), -1, &stmt, NULL);
-//				if (rc != SQLITE_OK)
-//				{
-//					fprintf(stderr, "SQL Statement error: %s\n", zErrMsg);
-//					sqlite3_free(zErrMsg);
-//				}
-//				rc = sqlite3_step(stmt);
-//				if (rc != SQLITE_DONE) {
-//					fprintf(stderr, "SQL error: %s\n", zErrMsg);
-//					sqlite3_free(zErrMsg);
-//				}
-//				else
-//				{
-//					sqlite3_reset(stmt);
-//					sqlite3_finalize(stmt);
-//					return true;
-//				}
-//
-//				return true;
-//			}
-//
-//		}
-//		else
-//		{
-//
-//		}
-//	}
-//
-//
-//
-//	string cartItemSql = "INSERT INTO CartItems(CartID, Item, ItemPrice) VALUES(" + cartIDStr + ", " + movieIDStr + ", " + moviePriceStr + "); ";
-//
-//	rc = sqlite3_prepare(db, cartItemSql.c_str(), -1, &stmt, NULL);
-//	if (rc != SQLITE_OK)
-//	{
-//		fprintf(stderr, "SQL Statement error: %s\n", zErrMsg);
-//		sqlite3_free(zErrMsg);
-//	}
-//	rc = sqlite3_step(stmt);
-//	if (rc != SQLITE_DONE) {
-//		fprintf(stderr, "SQL error: %s\n", zErrMsg);
-//		sqlite3_free(zErrMsg);
-//	}
-//	else {
-//		fprintf(stdout, "Records created successfully\n");
-//		sqlite3_reset(stmt);
-//		sqlite3_finalize(stmt);
-//
-//		this->numItems++;
-//		string cartNumOfItemsStr = to_string(this->numItems);
-//		this->movies.push_back(movie);
-//		float cartSubTotal = this->calcSubtotal();
-//		string cartSubTotalStr = to_string(cartSubTotal);
-//
-//		string cartUpdateSql = "UPDATE Cart SET NumOfItems = " + cartNumOfItemsStr + ", TotalCost = " + cartSubTotalStr + " WHERE ID = " + cartIDStr + ";";
-//		rc = sqlite3_prepare(db, cartUpdateSql.c_str(), -1, &stmt, NULL);
-//		if (rc != SQLITE_OK)
-//		{
-//			fprintf(stderr, "SQL Statement error: %s\n", zErrMsg);
-//			sqlite3_free(zErrMsg);
-//		}
-//		rc = sqlite3_step(stmt);
-//		if (rc != SQLITE_DONE) {
-//			fprintf(stderr, "SQL error: %s\n", zErrMsg);
-//			sqlite3_free(zErrMsg);
-//		}
-//		else
-//		{
-//			sqlite3_reset(stmt);
-//			sqlite3_finalize(stmt);
-//			return true;
-//		}
-//	}
-//
-//	sqlite3_reset(stmt);
-//	sqlite3_finalize(stmt);
-//
-//
-//	sqlite3_close(db);
-//
-//
-//
-//	return false;
-//}
 
 
 
@@ -514,6 +460,191 @@ float Cart::calcSubtotal()
 	this->setSubtotal(tempSubtotal);
 	return tempSubtotal;
 }
+
+
+
+void Cart::displayCart()
+{
+	vector<Movie*>::iterator itr;
+	vector<Movie*> movieList = this->movies;
+	std::map<int, Movie*> allMovies;
+	
+	if (movieList.empty())
+	{
+		cout << "---> Your Cart is Empty <---" << endl;
+		return;
+	}
+
+	int counter = 1;
+	cout << "---> Your Cart <---" << endl;
+
+	for (itr = movieList.begin(); itr != movieList.end(); itr++)
+	{
+		allMovies[counter] = *itr;
+		cout << setw(1) << left << counter << ". " << setw(14) << left << (*itr)->getTitle() << left << "(x" << (*itr)->getQuantity() << ")";;
+		cout << "$" << fixed << setprecision(2) << (*itr)->getPrice() << endl;
+		counter++;
+	}
+	cout  << "-------------------" << endl << endl;
+
+}
+
+
+void Cart::displayAddToCart()
+{
+	vector<Movie*>::iterator itr;
+	vector<Movie*> movieList = this->movies;
+	std::map<int, Movie*> allMovies;
+
+	if (movieList.empty())
+	{
+		cout << "---> Your Cart is Empty <---" << endl;
+		return;
+	}
+
+	int counter = 1;
+	cout << "---> Your Cart <---" << endl;
+
+	for (itr = movieList.begin(); itr != movieList.end(); itr++)
+	{
+		allMovies[counter] = *itr;
+		cout << setw(1) << left << counter << ". " << setw(14) << left << (*itr)->getTitle() << left << "(x" << (*itr)->getQuantity() << ")";;
+		cout << "$" << fixed << setprecision(2) << (*itr)->getPrice() << endl;
+		counter++;
+	}
+	cout << "-------------------" << endl << endl;
+
+
+	bool doneSelecting = false;
+	string selection = "";
+	int selectionInt = 0;
+
+	while (!doneSelecting)
+	{
+		cout << "Which item would you like to add to your cart?" << endl;
+		cout << "Type 'DONE' to stop." << endl;
+		cout << "# of Movie: ";
+		cin >> selection;
+		if (selection == "DONE")
+		{
+			cout << endl;
+			break;
+		}
+		selectionInt = stoi(selection);
+		if (selectionInt < 0 || selectionInt > counter)
+		{
+			cout << "That was not a valid movie. Please select a movie from the list." << endl << endl;
+			selection = "";
+			selectionInt = 0;
+			continue;
+		}
+		Movie* selectedMovie = allMovies[selectionInt];
+		Cart* accountCart = this->account->getCart();
+		accountCart->addItem(selectedMovie);
+
+		cout << endl << "\"" << selectedMovie->getTitle() << "\" was added to your cart." << endl << endl;
+
+		if (movieList.empty())
+		{
+			cout << "---> Your Cart is Empty <---" << endl;
+			return;
+		}
+
+		int counter = 1;
+		cout << "---> Your Cart <---" << endl;
+
+		for (itr = movieList.begin(); itr != movieList.end(); itr++)
+		{
+			allMovies[counter] = *itr;
+			cout << setw(1) << left << counter << ". " << setw(14) << left << (*itr)->getTitle() << left << "(x" << (*itr)->getQuantity() << ")";;
+			cout << "$" << fixed << setprecision(2) << (*itr)->getPrice() << endl;
+			counter++;
+		}
+		cout << "-------------------" << endl << endl;
+
+
+	}
+
+}
+
+
+void Cart::displayRemoveFromCart()
+{
+	vector<Movie*>::iterator itr;
+	vector<Movie*> movieList = this->movies;
+	std::map<int, Movie*> allMovies;
+
+	if (movieList.empty())
+	{
+		cout << "---> Your Cart is Empty <---" << endl;
+		return;
+	}
+
+	int counter = 1;
+	cout << "---> Your Cart <---" << endl;
+
+	for (itr = movieList.begin(); itr != movieList.end(); itr++)
+	{
+		allMovies[counter] = *itr;
+		cout << setw(1) << left << counter << ". " << setw(14) << left << (*itr)->getTitle() << left << "(x" << (*itr)->getQuantity() << ")";;
+		cout << "$" << fixed << setprecision(2) << (*itr)->getPrice() << endl;
+		counter++;
+	}
+	cout << "-------------------" << endl << endl;
+
+
+	bool doneSelecting = false;
+	string selection = "";
+	int selectionInt = 0;
+
+	while (!doneSelecting)
+	{
+		cout << "Which item would you like to remove from your cart?" << endl;
+		cout << "Type 'DONE' to stop." << endl;
+		cout << "# of Movie: ";
+		cin >> selection;
+		if (selection == "DONE")
+		{
+			cout << endl;
+			break;
+		}
+		selectionInt = stoi(selection);
+		if (selectionInt < 0 || selectionInt > counter)
+		{
+			cout << "That was not a valid movie. Please select a movie from the list." << endl << endl;
+			selection = "";
+			selectionInt = 0;
+			continue;
+		}
+		Movie* selectedMovie = allMovies[selectionInt];
+		Cart* accountCart = this->account->getCart();
+		accountCart->decItem(selectedMovie);
+
+		cout << endl << "\"" << selectedMovie->getTitle() << "\" was removed from your cart." << endl << endl;
+
+		if (movieList.empty())
+		{
+			cout << "---> Your Cart is Empty <---" << endl;
+			return;
+		}
+
+		int counter = 1;
+		cout << "---> Your Cart <---" << endl;
+
+		for (itr = movieList.begin(); itr != movieList.end(); itr++)
+		{
+			allMovies[counter] = *itr;
+			cout << setw(1) << left << counter << ". " << setw(14) << left << (*itr)->getTitle() << left << "(x" << (*itr)->getQuantity() << ")";;
+			cout << "$" << fixed << setprecision(2) << (*itr)->getPrice() << endl;
+			counter++;
+		}
+		cout << "-------------------" << endl << endl;
+
+
+	}
+
+}
+
 
 
 

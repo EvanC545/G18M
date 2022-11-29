@@ -151,6 +151,11 @@ int Movie::getID() {
 	return this->id;
 };
 
+int Movie::getQuantity() {
+
+	return this->quantity;
+};
+
 int Movie::incrementQuantity()
 {
 	int newQuantity = this->quantity + 1;
@@ -164,6 +169,11 @@ int Movie::decrementQuantity()
 	int newQuantity = this->quantity - 1;
 	this->quantity = newQuantity;
 	return newQuantity;
+}
+
+void Movie::setQuantity(int quantity)
+{
+	this->quantity = quantity;
 }
 
 void MovieManager::displayAndChooseMovies(Account* account)
@@ -255,7 +265,7 @@ void MovieManager::displayAndChooseMovies(Account* account)
 		if (selectionInt < 0 || selectionInt > counter)
 		{
 			cout << "That was not a valid movie. Please select a movie from the list." << endl << endl;
-			selection = nullptr;
+			selection = "";
 			selectionInt = 0;
 			continue;
 		}
@@ -271,9 +281,5 @@ void MovieManager::displayAndChooseMovies(Account* account)
 
 	}
 
-
-
-
-
-
 }
+

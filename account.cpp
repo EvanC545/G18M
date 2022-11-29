@@ -247,3 +247,13 @@ Cart* Account::getCart()
 {
 	return this->currentCart;
 }
+
+Address::Address(string name, string line1, string line2, string city, string state, string zip)
+{
+	this->Name = name;
+	this->AddressLine1 = line1;
+	this->AddressLine2 = line2;
+	this->City = city;
+	this->State = state;
+	this->Zip = zip;
+}

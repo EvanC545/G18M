@@ -5,6 +5,19 @@ using std::string;
 
 
 
+class Address {
+private:
+	string Name;
+	string AddressLine1;
+	string AddressLine2;
+	string City;
+	string State;
+	string Zip;
+public:
+	Address() {};
+	Address(string name, string line1, string line2, string city, string state, string zip);
+};
+
 class Account {
 private:
 	bool dbFound = false;
@@ -12,12 +25,8 @@ private:
 	string name;
 	string email;
 	string password;
-	string shippingName;
-	string shippingAddressLine1;
-	string shippingAddressLine2;
-	string shippingCity;
-	string shippingState;
-	string shippingZip;
+	Address* shippingAddress;
+	Address* billingAddress;
 	string cardHolder;
 	string cardNumber;
 	string cardExpDate;
