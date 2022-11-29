@@ -76,7 +76,7 @@ int Movie::getReleased() {
 
 };
 
-double Movie::getLength() {
+float Movie::getLength() {
 
 	return length;
 
@@ -94,10 +94,9 @@ int Movie::getReviews() {
 
 };
 
-double Movie::getPrice() {
+float Movie::getPrice() {
 
-	return price;
-
+	return this->price * this->quantity;
 };
 
 //setters definitions
@@ -136,7 +135,7 @@ void Movie::setReviews(int rev) {
 
 };
 
-void Movie::setPrice(double p_price) {
+void Movie::setPrice(float p_price) {
 
 	price = p_price;
 
@@ -152,7 +151,20 @@ int Movie::getID() {
 	return this->id;
 };
 
+int Movie::incrementQuantity()
+{
+	int newQuantity = this->quantity + 1;
+	this->quantity = newQuantity;
+	return newQuantity;
+}
 
+
+int Movie::decrementQuantity()
+{
+	int newQuantity = this->quantity - 1;
+	this->quantity = newQuantity;
+	return newQuantity;
+}
 
 void MovieManager::displayAndChooseMovies(Account* account)
 {
@@ -196,12 +208,14 @@ void MovieManager::displayAndChooseMovies(Account* account)
 			tempMovie->setReleased(movieReleased);
 		}
 		
-		char* moviePriceChar = (char*)sqlite3_column_text(stmt, 3);
+		char* moviePriceChar = (char*)sqlite3_column_text(stmt, 5);
 		if (moviePriceChar)
 		{
-			int moviePrice = strtof(movieReleasedChar, NULL);
+			float moviePrice = strtof(moviePriceChar, NULL);
 			tempMovie->setPrice(moviePrice);
 		}
+
+
 
 		allMovies.insert(std::pair<int, Movie*>(counter, tempMovie));
 		rc = sqlite3_step(stmt);
@@ -249,28 +263,7 @@ void MovieManager::displayAndChooseMovies(Account* account)
 		Movie* selectedMovie = allMovies[selectionInt];
 		Cart* accountCart = account->getCart();
 
-
-		int movieID = selectedMovie->getID();
-		string movieIDStr = to_string(movieID);
-		int cartID = accountCart->getID();
-		string cartIDStr = to_string(cartID);
-		string cartItemSql = "INSERT INTO CartItems(CartID, Item) VALUES(" + cartIDStr + ", " + movieIDStr + ");";
-		rc = sqlite3_prepare(db, cartItemSql.c_str(), -1, &stmt, NULL);
-		if (rc != SQLITE_OK)
-		{
-			fprintf(stderr, "SQL Statement error: %s\n", zErrMsg);
-			sqlite3_free(zErrMsg);
-		}
-
-
-		rc = sqlite3_step(stmt);
-		if (rc != SQLITE_DONE) {
-			fprintf(stderr, "SQL error: %s\n", zErrMsg);
-			sqlite3_free(zErrMsg);
-		}
-
-
-		//accountCart->addItem(selectedMovie);
+		accountCart->addItem(selectedMovie);
 
 		cout << endl << "\"" << selectedMovie->getTitle() << "\" was added to your cart." << endl;
 

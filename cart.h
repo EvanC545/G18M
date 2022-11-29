@@ -26,12 +26,15 @@ public:
 	// Constructors
 	Cart(Account* account);
 
+	void setSubtotal(float subTotal);
+	float getSubtotal();
 	void viewCart();
 	bool cartIsEmpty();
 	bool addItem(Movie* movie);
 	bool decItem(Movie* movie);
 	bool removeItem(Movie* movie);
 	bool checkout();
-	double calcSubtotal();
+	float calcSubtotal();
 	int getID();
+	bool removeHelper(Movie* movie, int movieToDeleteId);
 };

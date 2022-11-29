@@ -13,11 +13,11 @@ private:
 	string title;
 	string genre;
 	int released;
-	double length;
+	float length;
 	string director;
-	int reviews;
-	double price;
-
+	int reviews = 0;
+	float price = 0.00;
+	int quantity = 0;
 
 public:
 
@@ -30,10 +30,10 @@ public:
 	string getTitle();
 	string getGenre();
 	int getReleased();
-	double getLength();
+	float getLength();
 	string getDirector();
 	int getReviews();
-	double getPrice();
+	float getPrice();
 
 	//setters
 	void setTitle(string p_title);
@@ -42,8 +42,11 @@ public:
 	void setLength(double len);
 	void setDirector(string dir);
 	void setReviews(int rev);
-	void setPrice(double p_price);
+	void setPrice(float p_price);
 	void setID(int id);
+
+	int incrementQuantity();
+	int decrementQuantity();
 
 };
 
