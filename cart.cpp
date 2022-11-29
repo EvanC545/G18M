@@ -82,7 +82,7 @@ Cart::Cart(Account* account)
 		this->id = stoi(str);
 		//fprintf(stdout, "Record: %s\n", str);
 	}
-
+	sqlite3_finalize(stmt);
 	sqlite3_close(db);
 
 }

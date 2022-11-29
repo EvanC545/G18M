@@ -208,6 +208,8 @@ void MovieManager::displayAndChooseMovies(Account* account)
 
 		counter++;
 	}
+	// USED RESET TO STOP BUSY
+	sqlite3_reset(stmt);
 	sqlite3_finalize(stmt);
 
 
@@ -260,9 +262,7 @@ void MovieManager::displayAndChooseMovies(Account* account)
 			sqlite3_free(zErrMsg);
 		}
 
-		// DB IS BUSY HERE
 
-		//sqlite3_busy_handler(db, busy_handler, NULL);
 		rc = sqlite3_step(stmt);
 		if (rc != SQLITE_DONE) {
 			fprintf(stderr, "SQL error: %s\n", zErrMsg);

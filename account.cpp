@@ -81,6 +81,9 @@ Account::Account(string name, string email, string password)
 		fprintf(stdout, "Records created successfully\n");
 	}
 
+	sqlite3_finalize(stmt);
+
+
 	string accountSelectSql = "SELECT * FROM Account where Email = '" + this->email + "';";
 
 	rc = sqlite3_prepare(db, accountSelectSql.c_str(), -1, &stmt, NULL);
@@ -210,6 +213,7 @@ int AccountManager::authenticate(string email, string password)
 				return id;
 			}
 			std::cout << "Login Invalid" << std::endl;
+			sqlite3_finalize(stmt);
 			sqlite3_close(db);
 
 			return 0;
