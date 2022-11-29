@@ -1,13 +1,17 @@
 #include <iostream>
 #include <sqlite3.h>
 #include "account.h"
-#include "cart.h"
 #include "movie.h"
 #include "order.h"
 
 using namespace std;
 
+string DB_NAME = "G18M.sqlite";
+
+
 //globals
+
+//CHANGE TO FALSE
 bool loggedin = false;
 bool nested = false;
 int menu_items;
@@ -211,14 +215,63 @@ int main() {
 		//perform user desired action
 		if (!loggedin) {
 
+			string name;
+			string email;
+			string password1;
+			string password2;
+			bool validPasswords = false;
+			int idOrFalse = 0;
+			Account* account;
+			AccountManager accountManager;
 			switch (choice) {
 
 			case 1:
 				//login
 				//set loggedin to true
+				
+				while (!idOrFalse)
+				{
+					cout << endl << "Please enter your email: ";
+					cin >> email;
+					cout << endl << "Please enter your password: ";
+					cin >> password1;
+					idOrFalse = accountManager.authenticate(email, password1);
+				}
+				account = new Account(idOrFalse);
+				if (account)
+				{
+					cout << endl << "You are now logged in as " << account->getName() << endl << endl;
+					loggedin = true;
+					//Cart* cart = new Cart(account);
+					//account->setCart(cart);
+				}
+
 				break;
 			case 2:
 				//create account
+
+				cout << "Please enter your name: ";
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				getline(cin, name);
+				cout << endl << "Please enter your email: ";
+				cin >> email;
+				while (!validPasswords)
+				{
+					cout << endl << "Please enter your password: ";
+					cin >> password1;
+					cout << endl << "Please enter your password again: ";
+					cin >> password2;
+					if (password1 != password2)
+					{
+						cout << "Passwords don't match. Please try again.";
+					}
+					else
+					{
+						validPasswords = true;
+					}
+				}
+				account = new Account(name, email, password1);
+
 				break;
 			case 3:
 				exit(0);
@@ -233,6 +286,11 @@ int main() {
 
 			case 1:
 				//view items
+				MovieManager movieManager;
+				movieManager.displayAllMovies();
+
+
+
 				break;
 			case 2:
 				//cart info

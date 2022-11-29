@@ -1,10 +1,13 @@
 #pragma once
 #include <string>
-
 using std::string;
+
+
 
 class Account {
 private:
+	bool dbFound = false;
+	int id;
 	string name;
 	string email;
 	string password;
@@ -18,9 +21,13 @@ private:
 	string cardNumber;
 	string cardExpDate;
 	string cardSecurityCode;
-	int currentCardId;
+	int currentCartId;
+
 public:
+	Account() {};
 	Account(string name, string email, string password);
+	Account(int id);
+
 	void setName(string name);
 	string getName();
 	void setEmail(string email);
@@ -33,6 +40,15 @@ public:
 	string getBillingAddress();
 	void setCard(string currentCardId);
 	// Datatype?--> string getCard();
-	void setCart(string cartId);
+	void setCart(int cartId);
 	// Datatype? --> string getCart();
+	int getID();
+};
+
+
+
+class AccountManager {
+public:
+	AccountManager() {};
+	int authenticate(string email, string password);
 };

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "order.h"
 
 void Order::setCustomer_Name(Account customer) {

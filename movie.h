@@ -7,6 +7,7 @@ class Movie {
 
 private:
 
+	int id;
 	string title;
 	string genre;
 	int released;
@@ -39,5 +40,13 @@ public:
 	void setDirector(string dir);
 	void setReviews(int rev);
 	void setPrice(double p_price);
+	void setID(int id);
 
+};
+
+
+class MovieManager {
+public:
+	void displayAllMovies();
+	bool addMovieToCart();
 };
