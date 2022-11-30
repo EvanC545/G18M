@@ -1,17 +1,25 @@
 #include <iostream>
 #include <sqlite3.h>
 #include "account.h"
-#include "cart.h"
 #include "movie.h"
 #include "order.h"
+#include "cart.h"
 
 using namespace std;
 
+string DB_NAME = "G18M.sqlite";
+
 //globals
+
+//CHANGE TO FALSE
 bool loggedin = false;
 bool nested = false;
 int menu_items;
 int choice;
+Account* account;
+Address* shippingAddress;
+Address* billingAddress;
+
 
 //function to get user choice for menu
 void getChoice() {
@@ -73,10 +81,9 @@ void displayNested(int nest) {
 		cout << endl;
 		cout << "1. Go Back\n";
 		cout << "2. View Cart\n";
-		cout << "3. Input Shipping/Billing Address\n";
-		cout << "4. Input Card Info\n";
-		cout << "5. Confirm Checkout\n\n";
-		menu_items = 5;
+		cout << "3. Checkout\n\n";
+		
+		menu_items = 3;
 		break;
 	case 3:
 		cout << endl;
@@ -101,30 +108,40 @@ void displayNested(int nest) {
 
 //function to handle user desired action for cart info, checkout, order history, and edit account nested menus
 void nestedAction(int nest) {
-
 	switch (nest) {
 
 	case 1:
-		
+	{
 		//cart info nested menu branch
 		switch (choice) {
 
-		case 1:
-			//go back
-			break;
-		case 2:
-			//view cart
-			break;
-		case 3:
-			//remove item
-			break;
-		case 4:
-			//add item
-			break;
-
+			case 1:
+				//go back
+				break;
+			case 2:
+			{
+				//view cart
+				Cart* accountCart = account->getCart();
+				accountCart->displayCart();
+				break;
+			}
+			case 3:
+			{
+				//remove item
+				Cart* accountCart = account->getCart();
+				accountCart->displayRemoveFromCart();
+				break;
+			}
+			case 4:
+			{
+				//add item
+				Cart* accountCart = account->getCart();
+				accountCart->displayAddToCart();
+				break;
+			}
 		}
 		break;
-
+	}
 	case 2:
 
 		//checkout nested menu branch
@@ -135,16 +152,43 @@ void nestedAction(int nest) {
 			//go back
 			break;
 		case 2:
+		{
 			//view cart
+			Cart * accountCart = account->getCart();
+			accountCart->displayCart();
 			break;
+		}
 		case 3:
-			//input shipping/billing information
-			break;
-		case 4:
-			//input card info
-			break;
-		case 5:
 			//confirm checkout
+			Cart * accountCart = account->getCart();
+			if (accountCart->cartIsEmpty())
+			{
+				cout << endl << "Your Cart is Empty. Please add an item before checking out." << endl << endl;
+				break;
+			}
+
+			if (account->hasValidAddresses())
+			{
+				string input = "";
+				bool confirmedOrder = false;
+
+				while (!confirmedOrder)
+				{
+					cout << endl << "Use Default Addresses? (y/n): ";
+					cin >> input;
+					if (input[0] == 'y')
+					{
+						break;
+					}
+				}
+			}
+			else
+			{
+				account->displayEditAddressInfo();
+			}
+			account->displayEditCardInfo();
+			account->displayConfirm();
+
 			break;
 
 		}
@@ -160,8 +204,8 @@ void nestedAction(int nest) {
 			break;
 		case 2:
 			//view past orders
+			account->displayPastOrders();
 			break;
-
 		}
 		break;
 
@@ -175,18 +219,34 @@ void nestedAction(int nest) {
 			break;
 		case 2:
 			//edit addresses
+			account->displayEditAddressInfo();
+			cout << endl;
 			break;
 		case 3:
 			//edit card
+			account->displayEditCardInfo();
+			cout << endl;
+
 			break;
 		case 4:
 			//edit name/email
+			account->displayEditNameEmail();
+			cout << endl;
+
 			break;
 		case 5:
 			//change password
+			account->displayEditPassword();
+			cout << endl;
 			break;
 		case 6:
 			//delete account
+			bool deleted = account->deleteAccount();
+			if (deleted)
+			{
+				loggedin = false;
+			}
+			cout << endl;
 			break;
 
 		}
@@ -198,8 +258,7 @@ void nestedAction(int nest) {
 
 int main() {
 
-	
-
+	account = nullptr;
 	do {
 
 		//display menu
@@ -208,18 +267,78 @@ int main() {
 		//get user choice
 		getChoice();
 
+
+
 		//perform user desired action
 		if (!loggedin) {
 
+			string name;
+			string email;
+			string password1;
+			string password2;
+			bool validPasswords = false;
+			int idOrFalse = 0;
+			AccountManager accountManager;
 			switch (choice) {
 
 			case 1:
+			{
 				//login
 				//set loggedin to true
+				
+				while (!idOrFalse)
+				{
+					cout << endl << "Please enter your email: ";
+					cin >> email;
+					cout << endl << "Please enter your password: ";
+					cin >> password1;
+					idOrFalse = accountManager.authenticate(email, password1);
+				}
+				account = new Account(idOrFalse);
+				if (account)
+				{
+					cout << endl << "You are now logged in as " << account->getName() << endl << endl;
+					loggedin = true;
+					Cart* cart = new Cart(account);
+					account->setCart(cart);
+				}
+
 				break;
+			}
 			case 2:
+			{
 				//create account
+
+				cout << "Please enter your name: ";
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				getline(cin, name);
+				cout << endl << "Please enter your email: ";
+				cin >> email;
+				while (!validPasswords)
+				{
+					cout << endl << "Please enter your password: ";
+					cin >> password1;
+					cout << endl << "Please enter your password again: ";
+					cin >> password2;
+					if (password1 != password2)
+					{
+						cout << "Passwords don't match. Please try again.";
+					}
+					else
+					{
+						validPasswords = true;
+					}
+				}
+				account = new Account(name, email, password1);
+
+				cout << endl << "You are now logged in as " << account->getName() << endl << endl;
+
+				loggedin = true;
+				Cart* cart = new Cart(account);
+				account->setCart(cart);
+
 				break;
+			}
 			case 3:
 				exit(0);
 				break;
@@ -233,6 +352,8 @@ int main() {
 
 			case 1:
 				//view items
+				MovieManager movieManager;
+				movieManager.displayAndChooseMovies(account);
 				break;
 			case 2:
 				//cart info
@@ -261,6 +382,7 @@ int main() {
 			case 6:
 				//logout
 				//set loggedin to false
+				loggedin = false;
 				break;
 			case 7:
 				exit(0);
