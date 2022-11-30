@@ -180,16 +180,13 @@ void nestedAction(int nest) {
 					{
 						break;
 					}
-					else
-					{
-						account->displayEditCardInfo();
-					}
 				}
 			}
 			else
 			{
 				account->displayEditAddressInfo();
 			}
+			account->displayEditCardInfo();
 			account->displayConfirm();
 
 			break;
@@ -233,7 +230,7 @@ void nestedAction(int nest) {
 			break;
 		case 4:
 			//edit name/email
-			account->displayEditCardInfo();
+			account->displayEditNameEmail();
 			cout << endl;
 
 			break;
