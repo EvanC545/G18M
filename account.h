@@ -1,19 +1,29 @@
 #pragma once
 #include <string>
 #include "cart.h"
+#include "order.h"
 using std::string;
 
 
+class Card {
+public:
+	string cardHolder;
+	string cardNumber;
+	string cardExpDate;
+	string cardSecurityCode;
+	Card() {};
+	Card(string name, string number, string date, string securityCode);
+};
+
 
 class Address {
-private:
+public:
 	string Name;
 	string AddressLine1;
 	string AddressLine2;
 	string City;
 	string State;
 	string Zip;
-public:
 	Address() {};
 	Address(string name, string line1, string line2, string city, string state, string zip);
 };
@@ -26,11 +36,12 @@ private:
 	string email;
 	string password;
 	Address* shippingAddress;
+	bool hasValidShippingAddress = false;
 	Address* billingAddress;
-	string cardHolder;
-	string cardNumber;
-	string cardExpDate;
-	string cardSecurityCode;
+	bool hasValidBillingAddress = false;
+	vector<Order*> orders;
+	Card* card;
+	bool hasValidCard = false;
 	Cart* currentCart;
 
 public:
@@ -42,18 +53,29 @@ public:
 	string getName();
 	void setEmail(string email);
 	string getEmail();
-	void setPassword(string oldPassword, string newPassword);
-	bool authenticate(string email, string password);
-	void setShippingAddress(string address);
-	string getShippingAddress();
-	void setBillingAddress(string address);
-	string getBillingAddress();
-	void setCard(string currentCardId);
-	// Datatype?--> string getCard();
+	bool setPassword(string oldPassword, string newPassword);
+
+
+	void setShippingAddress(Address* address);
+	Address* getShippingAddress();
+	void setBillingAddress(Address* address);
+	Address* getBillingAddress();
+	bool hasValidAddresses();
+	void setCard(Card* card);
+	Card* getCard();
 	void setCart(Cart* cart);
-	// Datatype? --> string getCart();
 	int getID();
 	Cart* getCart();
+	vector<Order*> getOrders();
+	void displayEditNameEmail();
+	void displayEditPassword();
+	void displayEditAddressInfo();
+	void displayEditCardInfo();
+	void displayConfirm();
+	void displayPastOrders();
+	void emptyCartReduceStock();
+	bool deleteAccount();
+
 };
 
 

@@ -10,7 +10,6 @@
 
 
 using namespace std;
-//constructors definitions
 
 extern string DB_NAME;
 
@@ -61,7 +60,7 @@ Cart::Cart(Account* account)
 		sqlite3_free(zErrMsg);
 	}
 	else {
-		fprintf(stdout, "Records created successfully\n");
+		//fprintf(stdout, "Records created successfully\n");
 	}
 	sqlite3_finalize(stmt);
 
@@ -135,7 +134,7 @@ bool Cart::addItem(Movie* movie)
 			sqlite3_free(zErrMsg);
 		}
 		else {
-			fprintf(stdout, "Records created successfully\n");
+			//fprintf(stdout, "Records created successfully\n");
 			sqlite3_reset(stmt);
 			sqlite3_finalize(stmt);
 
@@ -272,7 +271,7 @@ bool Cart::decItem(Movie* movie)
 	int cartID = this->id;
 	string cartIDStr = to_string(cartID);
 
-	string checkItemInSql = "SELECT * FROM CartItems where CartID = " + cartIDStr + " and Item = " + movieIDStr + ";";
+	string checkItemInSql = "SELECT * FROM CartItems WHERE CartID = " + cartIDStr + " and Item = " + movieIDStr + ";";
 	rc = sqlite3_prepare(db, checkItemInSql.c_str(), -1, &stmt, NULL);
 	if (rc != SQLITE_OK)
 	{
@@ -440,9 +439,24 @@ void Cart::setSubtotal(float subTotal)
 	this->subTotal = subTotal;
 }
 
+void Cart::setTotalCost(float total)
+{
+	this->totalCost = total;
+}
+
 float Cart::getSubtotal()
 {
 	return this->subTotal;
+}
+
+float Cart::getTotalCost()
+{
+	return this->totalCost;
+}
+
+vector<Movie*> Cart::getMovies()
+{
+	return this->movies;
 }
 
 
@@ -567,7 +581,6 @@ void Cart::displayAddToCart()
 
 }
 
-
 void Cart::displayRemoveFromCart()
 {
 	vector<Movie*>::iterator itr;
@@ -645,6 +658,13 @@ void Cart::displayRemoveFromCart()
 
 }
 
-
-
+bool Cart::cartIsEmpty()
+{
+	vector<Movie*> movies = this->getMovies();
+	if (movies.empty())
+	{
+		return true;
+	}
+	return false;
+}
 

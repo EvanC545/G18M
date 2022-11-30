@@ -17,6 +17,8 @@ bool nested = false;
 int menu_items;
 int choice;
 Account* account;
+Address* shippingAddress;
+Address* billingAddress;
 
 
 //function to get user choice for menu
@@ -79,10 +81,9 @@ void displayNested(int nest) {
 		cout << endl;
 		cout << "1. Go Back\n";
 		cout << "2. View Cart\n";
-		cout << "3. Input Shipping/Billing Address\n";
-		cout << "4. Input Card Info\n";
-		cout << "5. Confirm Checkout\n\n";
-		menu_items = 5;
+		cout << "3. Checkout\n\n";
+		
+		menu_items = 3;
 		break;
 	case 3:
 		cout << endl;
@@ -158,13 +159,39 @@ void nestedAction(int nest) {
 			break;
 		}
 		case 3:
-			//input shipping/billing information
-			break;
-		case 4:
-			//input card info
-			break;
-		case 5:
 			//confirm checkout
+			Cart * accountCart = account->getCart();
+			if (accountCart->cartIsEmpty())
+			{
+				cout << endl << "Your Cart is Empty. Please add an item before checking out." << endl << endl;
+				break;
+			}
+
+			if (account->hasValidAddresses())
+			{
+				string input = "";
+				bool confirmedOrder = false;
+
+				while (!confirmedOrder)
+				{
+					cout << endl << "Use Default Addresses? (y/n): ";
+					cin >> input;
+					if (input[0] == 'y')
+					{
+						break;
+					}
+					else
+					{
+						account->displayEditCardInfo();
+					}
+				}
+			}
+			else
+			{
+				account->displayEditAddressInfo();
+			}
+			account->displayConfirm();
+
 			break;
 
 		}
@@ -180,8 +207,8 @@ void nestedAction(int nest) {
 			break;
 		case 2:
 			//view past orders
+			account->displayPastOrders();
 			break;
-
 		}
 		break;
 
@@ -195,18 +222,34 @@ void nestedAction(int nest) {
 			break;
 		case 2:
 			//edit addresses
+			account->displayEditAddressInfo();
+			cout << endl;
 			break;
 		case 3:
 			//edit card
+			account->displayEditCardInfo();
+			cout << endl;
+
 			break;
 		case 4:
 			//edit name/email
+			account->displayEditCardInfo();
+			cout << endl;
+
 			break;
 		case 5:
 			//change password
+			account->displayEditPassword();
+			cout << endl;
 			break;
 		case 6:
 			//delete account
+			bool deleted = account->deleteAccount();
+			if (deleted)
+			{
+				loggedin = false;
+			}
+			cout << endl;
 			break;
 
 		}
@@ -342,6 +385,7 @@ int main() {
 			case 6:
 				//logout
 				//set loggedin to false
+				loggedin = false;
 				break;
 			case 7:
 				exit(0);

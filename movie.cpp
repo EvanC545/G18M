@@ -178,8 +178,7 @@ void Movie::setQuantity(int quantity)
 
 void MovieManager::displayAndChooseMovies(Account* account)
 {
-	// Show movies
-	// Maybe use map to store ID with corresponding list number
+
 	sqlite3* db = nullptr;
 	sqlite3_stmt* stmt = nullptr;
 	char* zErrMsg = 0;

@@ -27,13 +27,13 @@ public:
 	Cart(Account* account);
 
 	void setSubtotal(float subTotal);
+	void setTotalCost(float total);
 	float getSubtotal();
-	void viewCart();
+	float getTotalCost();
+	vector<Movie*> getMovies();
 	bool cartIsEmpty();
 	bool addItem(Movie* movie);
 	bool decItem(Movie* movie);
-	bool removeItem(Movie* movie);
-	bool checkout();
 	float calcSubtotal();
 	int getID();
 	void displayCart();
