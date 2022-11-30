@@ -49,12 +49,18 @@ def displayItem(numbers, index):
 def test_openFile(filename):
     assert openFile(filename) == "File opened."
 
-@pytest.mark.parametrize("num1, num2", [(4, 0), ("num1", 2), (True, False)])
+@pytest.mark.parametrize("num1, num2", [(0.001, 0.001), ("num1", 2), (True, False)])
 def test_numbers(num1, num2):
     assert numbers(num1, num2) == 1
 
-@pytest.mark.parametrize("x1, y1, x2, y2", [(0, 0, math.sqrt(7), math.sqrt(2)), ("x1", "y1", "x2", "y2"), (True, False, 3, 4)])
+@pytest.mark.parametrize("x1, y1, x2, y2", [(0, 0, math.sqrt(7), math.sqrt(2)), ("x1", "y1", "x2", "y2"), (0, 0, 3, 4)])
 def test_dist(x1, y1, x2, y2):
     assert dist(x1, y1, x2, y2) == 3 
     ##first test is supposed to equal 3, but instead python says it's equal to 3.0000000000000004
     ##third test returns an actual number too, somehow.
+
+@pytest.mark.parametrize("temp", ["racecar", True, 1.7171])
+def test_isPalindrome(temp):
+    assert isPalindrome(temp) == True
+    ##first test succeeds
+    ##second and third tests obviously fail because incorrect object
