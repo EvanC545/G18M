@@ -1,0 +1,520 @@
+﻿Methods and Tools in SW Development
+                                               Homework 5
+
+
+Function Name: test_openFile
+Number of Tests: 3
+
+
+Items to test:
+* filename
+
+
+Inputs used for testing:
+* 1
+* “Stuff”
+* “%$#”
+
+
+Corrections made:
+
+
+…
+
+
+Tests passed: 
+None
+Tests failed:
+1. 1: Assertion error, this function took the input and actually worked, but the program didn’t think this was possible.
+2. “Stuff”: FileNotFoundError, a common error for this function. This function would have succeeded if this fileName existed, but it doesn’t on a local system, thus failing the test.
+3. “%$#”: Same as #2, but these characters are usually not allowed in a filename or path. I was expecting the compiler to expect this, but it didn’t.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Function Name: test_numbers
+Number of Tests: 3
+
+
+Items to test:
+* num1
+* num2
+
+
+Inputs used for testing:
+* 0.001, 0.001
+* “num1”, 2
+* True, False
+
+
+Corrections made:
+
+
+…
+
+
+Tests passed: 
+1. 0.001, 0.001: Testing to ensure this function can handle low-value float values.
+Tests failed:
+2. “num1”, 2: Unsupported operand types. Can’t divide a string and an integer.
+3. True, False: These inputs return an unexpected error; division by zero. The boolean values are handled as their binary equivalents, so it equals 1 / 0.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Function Name: test_dist
+Number of Tests: 3
+
+
+Items to test:
+* x1
+* y1
+* x2
+* y2
+
+
+Inputs used for testing:
+* 0, 0, sqrt(7), sqrt(2)
+* “x1”, “y1”, “x2”, “y2”
+* True, False, 3, 4
+
+
+Corrections made:
+
+
+…
+
+
+Tests passed: 
+None
+
+
+Tests failed: 
+1. 0, 0, sqrt(7), sqrt(2) ← These inputs are supposed to equal 3 given the distance formula. Python has issues with float calculations and instead, it equals 3.00000…4.
+2. “x1”, “y1”, “x2”, “y2”: Incorrect input type, function fails immediately.
+3. True, False, 3, 4: Incorrect input type, but the function continues to calculate the distance using only 3 and 4 while counting the boolean values as their respective binary values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Function Name: test_isPalindrome
+Number of Tests: 3
+
+
+Items to test:
+* temp
+
+
+Inputs used for testing:
+* “racecar”
+* True
+* 1.7171
+
+
+Corrections made:
+
+
+…
+
+
+Tests passed: 
+1. Racecar ← is a palindrome
+Tests failed:
+2. True: bool object is not subscriptable
+3. 1.7171: float object is not subscriptable
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Function Name: test_divide
+Number of Tests: 3
+
+
+Items to test:
+* 
+
+Inputs used for testing:
+* 
+
+Corrections made:
+
+
+…
+
+
+Tests passed: 
+
+
+…
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Function Name: test_sq
+Number of Tests: 3
+
+
+Items to test:
+* 
+
+Inputs used for testing:
+* 
+
+Corrections made:
+
+
+…
+
+
+Tests passed: 
+
+
+…
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Function Name: test_greetUser
+Number of Tests: 3
+
+
+Items to test:
+* 
+
+Inputs used for testing:
+* 
+
+Corrections made:
+
+
+…
+
+
+Tests passed: 
+
+
+…
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Function Name: test_displayItem
+Number of Tests: 3
+
+
+Items to test:
+* 
+
+Inputs used for testing:
+* 
+
+Corrections made:
+
+
+…
+
+
+Tests passed: 
+
+
+…
