@@ -49,6 +49,7 @@ public:
 	int decrementQuantity();
 	void setQuantity(int quantity);
 	int getQuantity();
+	float getBasePrice();
 
 };
 

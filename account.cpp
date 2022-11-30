@@ -774,7 +774,7 @@ void Account::displayPastOrders()
 		sqlite3_free(zErrMsg);
 	}
 	rc = sqlite3_step(stmt);
-
+	this->orders.clear();
 	while (sqlite3_column_text(stmt, 1))
 	{
 		Order* tempOrder = new Order();

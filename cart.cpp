@@ -499,6 +499,8 @@ void Cart::displayCart()
 		cout << "$" << fixed << setprecision(2) << (*itr)->getPrice() << endl;
 		counter++;
 	}
+
+	cout << endl << right << setw(22) << "Total Price: $" << fixed << setprecision(2) << this->subTotal << endl;
 	cout  << "-------------------" << endl << endl;
 
 }

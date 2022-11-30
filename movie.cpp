@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sqlite3.h>
 #include <string>
+#include <iomanip>
 #include <iterator>
 #include <map>
 #include "movie.h"
@@ -97,6 +98,12 @@ int Movie::getReviews() {
 float Movie::getPrice() {
 
 	return this->price * this->quantity;
+};
+
+
+float Movie::getBasePrice() {
+
+	return this->price;
 };
 
 //setters definitions
@@ -241,7 +248,9 @@ void MovieManager::displayAndChooseMovies(Account* account)
 
 	for (itr = allMovies.begin(); itr != allMovies.end(); itr++)
 	{
-		cout << itr->first << ": " << itr->second->getTitle() << endl;
+		string moviePrice = to_string(itr->second->getBasePrice());
+		cout << setw(1) << left << itr->first << ": " << setw(15) << left << itr->second->getTitle();
+		cout << "$" << right << setw(6) << fixed << setprecision(2) << itr->second->getBasePrice() << endl;
 	}
 
 	bool doneSelecting = false;
@@ -256,6 +265,7 @@ void MovieManager::displayAndChooseMovies(Account* account)
 		cin >> selection;
 		if (selection == "DONE")
 		{
+			cout << endl;
 			break;
 		}
 
